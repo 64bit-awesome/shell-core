@@ -54,8 +54,10 @@ int main (int argc, char* argv [])
             free(cmdline);
             exit(-1);
         }
+
+        uid_t euid = geteuid(); // the effective user id of this process.
         
-        printf("[shell-core %s] $ ", ++currentFolder);
+        printf("[shell-core %s] %s ", ++currentFolder, ((euid == 0) ? "#" : "$"));
         if(fgets(cmdline->line, BUFSIZ, stdin) == NULL) 
         {
             fprintf(stderr, "internal-error: ");
@@ -64,7 +66,7 @@ int main (int argc, char* argv [])
             free(cmdline);
             exit(-1);
         }
-        
+
         execute(cmdline);
     }
     
