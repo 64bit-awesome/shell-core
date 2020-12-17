@@ -81,6 +81,8 @@ int main (int argc, char* argv [])
 void execute(CmdLine* cmdline)
 {
     tokenize(cmdline);
+
+    if(cmdline->ntokens <= 0) return; // nothing to execute.
     
     // check if user wants to leave the shell:
     if(!strcmp(cmdline->tokens[0], "quit") || !strcmp(cmdline->tokens[0], "exit")) 
