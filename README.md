@@ -1,43 +1,40 @@
-# linux-shell-core (lsc)
+# shell-core (sc)
 
-An extendible Linux shell with pipe and redirection support.
+An extendible Linux / Unix shell with pipe and redirection support.
 
 This program implements the **core** functionalities of a shell: \
 read, parse, fork, setup redirects/pipes, fork, exec, wait (if not ran in background), and repeat.
-
-It should also work on Unix.
-
 
 ## Features
 
 #### Detects super cow powers:
 ```
-[64bit-awesome@arch-linux ~] $ sudo lsc
+[64bit-awesome@arch-linux ~] $ sudo sc
 [sudo] password for 64bit-awesome:
-[linux-shell-core ~] #
+[shell-core ~] #
 ```
 
 #### Keeps track of current directory:
 ```
-[64bit-awesome@arch-linux ~] $ usc
-[linux-shell-core ~] $ mkdir awesome
-[linux-shell-core ~] $ cd awesome
-[linux-shell-core awesome] $
+[64bit-awesome@arch-linux ~] $ sc
+[shell-core ~] $ mkdir awesome
+[shell-core ~] $ cd awesome
+[shell-core awesome] $
 ```
 
 #### Redirection of STDIN and/or STDOUT
 ```
-[linux-shell-core ~] $ cat < input.txt > input.txt.copy
+[shell-core ~] $ cat < input.txt > input.txt.copy
 ```
 
 #### STDOUT redirection append mode:
 ```
-[linux-shell-core ~] $ cat < more-input.txt >> input.txt.copy
+[shell-core ~] $ cat < more-input.txt >> input.txt.copy
 ```
 
 #### Pipelining: 
 ```
-[linux-shell-core ~] $ ls -la | grep usc.c
+[shell-core ~] $ ls -la | grep usc.c
 ```
 
 ## Compiling
@@ -55,5 +52,5 @@ It should also work on Unix.
 ## Limitations
 - Arguments, redirect symbols, and pipes must be seperated by whitespace.
 - Only supports background commands (**&**) when not piping the output.
-- Maximum number of arguments (as defined by **MAX_ARGS**) is currently 45.
+- Maximum number of arguments (as defined by **MAX_ARGS**) is currently 25.
 - When processing a pipe: the shell will always wait for the first process to finish before spawning the next.
