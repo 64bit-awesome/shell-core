@@ -19,6 +19,7 @@
 
 typedef struct // holds information about the current command-line.
 {
+    int npipes; // the number of pipes found in cmdline.
     int ntokens; // the number of tokens found in cmdline.
     char line[BUFSIZ]; // the full command-line.
     char* tokens[MAX_TOKENS]; // ->s to the tokens in cmdline.
@@ -99,6 +100,7 @@ void execute(CmdLine* cmdline)
 void tokenize(CmdLine* cmdline) 
 {
     int count = 0; // number of tokens found.
+    int pipeCount = 0; // number of pipes found.
 
     if((cmdline->tokens[0] = strtok(cmdline->line, "\n\t ")) == NULL) 
         cmdline->ntokens = 0; // no tokens found.
@@ -113,7 +115,10 @@ void tokenize(CmdLine* cmdline)
             fprintf(stderr, "maximum number of tokens is %d.\n", MAX_TOKENS);
             cmdline->ntokens = 0; // do not process any tokens.
         }
+
+        if(!strcmp(cmdline->tokens[count], "|")) pipeCount++; // count pipes.
     } // the last one is always NULL.
     
-    cmdline->ntokens = count; // update number of tokens found.
+    cmdline->ntokens = count; // store number of tokens found.
+    cmdline->npipes = pipeCount; // store number of pipes found.
 }
