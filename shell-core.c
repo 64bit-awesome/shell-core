@@ -5,6 +5,7 @@
  * @author Jordy Araujo <jordy.araujo@hotmail.com>
 */
 
+#include <pwd.h>
 #include <stdio.h>
 #include <unistd.h>
 #include<sys/wait.h> 
@@ -57,9 +58,20 @@ int main (int argc, char* argv [])
             exit(-1);
         }
 
+        char* homeDirectory; // home directory of current user.
+
+        // get the home directory of the user:
+        if ((homeDirectory = getenv("HOME")) == NULL) 
+        {
+            homeDirectory = getpwuid(getuid())->pw_dir;
+        }
+
         uid_t euid = geteuid(); // the effective user id of this process.
         
-        printf("[shell-core %s] %s ", ++currentFolder, ((euid == 0) ? "#" : "$"));
+        printf("[shell-core %s] %s ", 
+            ((!strcmp(homeDirectory, cwd)) ? "~" : ++currentFolder), // display ~ or last folder in cwd.
+            ((euid == 0) ? "#" : "$")); // display # if super user or $ if regular user.
+        
         if(fgets(cmdline->line, BUFSIZ, stdin) == NULL) 
         {
             fprintf(stderr, "internal-error: ");

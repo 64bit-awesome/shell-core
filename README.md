@@ -34,7 +34,10 @@ read, parse, fork, setup redirects/pipes, fork, exec, wait (if not ran in backgr
 
 #### Pipelining: 
 ```
-[shell-core ~] $ ls -la | grep usc.c
+[shell-core ~] $ ls -la | grep Makefile
+```
+```
+[shell-core ~] $ ls -la | grep c | ... | sort
 ```
 
 ## Compiling
