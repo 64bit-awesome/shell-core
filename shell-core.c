@@ -39,7 +39,7 @@ int main (int argc, char* argv [])
         if(getcwd(cwd, sizeof(cwd)) == NULL)
         {   // if here, getcwd failed:
             fprintf(stderr, "internal-error: ");
-            fprintf(stderr, "\n\tgetcwd: failed.");
+            fprintf(stderr, "\n\tgetcwd: failed.\n");
             
             free(cmdline);
             exit(-1);
@@ -49,7 +49,7 @@ int main (int argc, char* argv [])
         if((currentFolder = strrchr(cwd, '/')) == NULL)
         {   // if here, could not find / in directory:
             fprintf(stderr, "internal-error: ");
-            fprintf(stderr, "\n\tstrrchr: failed to find current folder in %s.", cwd);
+            fprintf(stderr, "\n\tstrrchr: failed to find current folder in %s.\n", cwd);
             
             free(cmdline);
             exit(-1);
@@ -61,7 +61,7 @@ int main (int argc, char* argv [])
         if(fgets(cmdline->line, BUFSIZ, stdin) == NULL) 
         {
             fprintf(stderr, "internal-error: ");
-            fprintf(stderr, "\n\tfgets: failed.");
+            fprintf(stderr, "\n\tfgets: failed.\n");
             
             free(cmdline);
             exit(-1);
@@ -108,7 +108,7 @@ void tokenize(CmdLine* cmdline)
         {
             fprintf(stderr, "internal-error: \n\t");
             fprintf(stderr, "too many tokens found. \n\t");
-            fprintf(stderr, "maximum number of tokens is %d.", MAX_TOKENS);
+            fprintf(stderr, "maximum number of tokens is %d.\n", MAX_TOKENS);
             cmdline->ntokens = 0; // do not process any tokens.
         }
     } // the last one is always NULL.
