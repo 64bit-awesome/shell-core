@@ -11,7 +11,7 @@ read, parse, fork, setup redirects/pipes, fork, exec, wait (if not ran in backgr
 ```
 [64bit-awesome@arch-linux ~] $ sudo sc
 [sudo] password for 64bit-awesome:
-[shell-core ~] #
+[shell-core ~] # 
 ```
 
 #### Keeps track of current directory:
@@ -19,7 +19,7 @@ read, parse, fork, setup redirects/pipes, fork, exec, wait (if not ran in backgr
 [64bit-awesome@arch-linux ~] $ sc
 [shell-core ~] $ mkdir awesome
 [shell-core ~] $ cd awesome
-[shell-core awesome] $
+[shell-core awesome] $ 
 ```
 
 #### Redirection of STDIN and/or STDOUT
