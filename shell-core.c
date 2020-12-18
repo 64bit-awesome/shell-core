@@ -200,20 +200,77 @@ void spawn(CmdLine* cmdline, int* fdd, int pipes, int executableIndex)
         argsToChild[j] = NULL;
     }
 
+    FILE *inputFile = NULL; // FILE information for an input file.
+    FILE *outputFile = NULL; // FILE information for an output file.
+
+    int stmtExecIndex; // index of current token in current statement.
+
     // copy over arguments:
-    for(j = 0; (executableIndex + j) < cmdline->ntokens; j++)
+    for(j = 0; ((stmtExecIndex = executableIndex + j)) < cmdline->ntokens; j++)
     {
-        if(!strcmp(cmdline->tokens[executableIndex + j], "|") 
-            || !strcmp(cmdline->tokens[executableIndex + j], ">")
-            || !strcmp(cmdline->tokens[executableIndex + j], ">>")
-            || !strcmp(cmdline->tokens[executableIndex + j], " "))
+        // redirecting input from file:
+        if(!strcmp(cmdline->tokens[stmtExecIndex], "<"))
         {
-            j = cmdline->ntokens; // stop copying; everything else is irrelevant.
+            inputFile = fopen(cmdline->tokens[stmtExecIndex + 1], "r"); // gets the file pointer for the input file.
+            if(inputFile == NULL) // if here, unable to open file:
+            {
+                fprintf(stderr, "invalid-file: \n\t");
+                fprintf(stderr, "unable to open %s to use as STDIN for %s.\n", 
+                    cmdline->tokens[stmtExecIndex + 1],
+                    cmdline->tokens[executableIndex]);
+                return;
+            }
+
+            if((*fdd = fileno(inputFile)) == -1) // if here, unable to get file descriptor: 
+            {
+                fprintf(stderr, "internal-error: \n\t");
+                fprintf(stderr, "unable to get file descriptor for %s to use as STDIN for %s.\n",
+                    cmdline->tokens[stmtExecIndex + 1],
+                    cmdline->tokens[executableIndex]);
+               
+                free(cmdline); // TODO: free args to child.
+                exit(-1);
+            }
+            
+            argsToChild[j] = NULL; // NULL terminate; everything else is irrelevant to child process.
         }
-        else
+        //redirect output to file:
+        else if(!strcmp(cmdline->tokens[stmtExecIndex], ">") || !strcmp(cmdline->tokens[stmtExecIndex], ">>"))
         {
-            argsToChild[j] = malloc(strlen(cmdline->tokens[executableIndex + j]) + 1);
-            strcpy(argsToChild[j], cmdline->tokens[executableIndex + j]);
+            // gets the file pointer for the output file:
+            outputFile = fopen(cmdline->tokens[stmtExecIndex + 1], (!strcmp(cmdline->tokens[stmtExecIndex], ">")) ? "w" : "a");
+
+            if(outputFile == NULL) // if here, unable to open file:
+            {
+               fprintf(stderr, "invalid-file: \n\t");
+                fprintf(stderr, "unable to open %s to use as STDOUT for %s.\n", 
+                    cmdline->tokens[stmtExecIndex + 1],
+                    cmdline->tokens[executableIndex]);
+                return;
+            }
+                    
+            if((stdOutFd = fileno(outputFile)) == -1) // if here, unable to get file descriptor: 
+            {
+                fprintf(stderr, "internal-error: \n\t");
+                fprintf(stderr, "unable to get file descriptor for %s to use as STDOUT for %s.\n",
+                    cmdline->tokens[stmtExecIndex + 1],
+                    cmdline->tokens[executableIndex]);
+               
+                free(cmdline); // TODO: free args to child.
+                exit(-1);
+            }
+
+            argsToChild[j] = NULL; // NULL terminate; everything else is irrelevant to child process.
+        }
+        else if(!strcmp(cmdline->tokens[stmtExecIndex], "|") 
+            || !strcmp(cmdline->tokens[stmtExecIndex], " "))
+        {
+            j = cmdline->ntokens; // stop copying; everything else is irrelevant to child process.
+        }
+        else // copy over to child arguments:
+        {
+            argsToChild[j] = malloc(strlen(cmdline->tokens[stmtExecIndex]) + 1);
+            strcpy(argsToChild[j], cmdline->tokens[stmtExecIndex]);
         }
     }
 
