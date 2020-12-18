@@ -92,7 +92,7 @@ int main (int argc, char* argv [])
 
 /**
  * Executes a command-line.
- * @param cmdline the current command-line information.
+ * @param cmdline command-line sent by user.
 */
 void execute(CmdLine* cmdline)
 {
@@ -144,7 +144,7 @@ void execute(CmdLine* cmdline)
 
 /**
  * Tokenizes the cmdline by newlines, tabs, and spaces.
- * @param cmdline the cmdline sent by the user.
+ * @param cmdline command-line sent by user.
 */
 void tokenize(CmdLine* cmdline) 
 {
@@ -187,7 +187,7 @@ void tokenize(CmdLine* cmdline)
 
 /**
  * Spawns a child process with the current statement from the command line.
- * @param cmdline cmdline sent by user.
+ * @param cmdline command-line sent by user.
  * @param fdd end of the pipe to pass along to next statement in pipe.
  * @param pipes number of pipes that have been processed.
  * @param executableIndex index of executable in current statement.
