@@ -50,9 +50,14 @@ read, parse, fork, setup redirects/pipes, fork, exec, wait (if not ran in backgr
 [shell-core ~] $ ls && echo password123 | grep 123
 ```
 
-#### Run command in background AND pipe result (second process must wait for input of other):
+#### Run command in background AND pipe result:
 ```
-[shell-core ~] $ ls -la | grep Makefile
+[shell-core ~] $ ls -la & | grep Makefile
+```
+
+```
+Bash does not support doing this: current implementation of this may be unstable. 
+The shell won't wait for any other commands: prompt will be displayed if any statements are in background.
 ```
 
 ## Compiling
