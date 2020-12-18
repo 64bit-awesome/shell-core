@@ -284,6 +284,7 @@ void spawn(CmdLine* cmdline, int* fdd, int pipes, int executableIndex)
             argsToChild[j] = NULL; // NULL terminate; everything else is irrelevant to child process.
         }
         else if(!strcmp(cmdline->tokens[stmtExecIndex], "|") 
+            || !strcmp(cmdline->tokens[stmtExecIndex], "&")
             || !strcmp(cmdline->tokens[stmtExecIndex], " "))
         {
             j = cmdline->ntokens; // stop copying; everything else is irrelevant to child process.
@@ -303,6 +304,19 @@ void spawn(CmdLine* cmdline, int* fdd, int pipes, int executableIndex)
             printf("[%s] \n\t", argsToChild[j]);
         }
         printf("\n");
+    }
+
+    int k; // index of current token.
+    int backgroundProcess = 0; // if the current statement should be run in background.
+
+    // detect request to run in background (&):
+    for(k = executableIndex; k < cmdline->ntokens; k++)
+    {
+        if(!strcmp(cmdline->tokens[k], "&"))
+        {
+            backgroundProcess = 1;
+            k = cmdline->ntokens;
+        }
     }
 
     // attempt to fork a child process:
@@ -336,7 +350,24 @@ void spawn(CmdLine* cmdline, int* fdd, int pipes, int executableIndex)
     }
     else // parent:
     {
-        wait(NULL);		
+        if(backgroundProcess)
+        {
+            if(setpgid(0, 0) == -1)
+            {
+                fprintf(stderr, "internal-error: \n\t");
+                fprintf(stderr, "setpgid: failed to make child [%s] a background process. \n", cmdline->tokens[executableIndex]);
+
+                free_strings(argsToChild, nArgsToChild);
+                free(cmdline);
+                exit(-1);
+            }
+        }
+        else // wait for process to finish before proceding:
+        {
+            wait(NULL);
+        }
+        
+        	
         close(fd[1]);
         *fdd = fd[0]; // save output from previous stmt in pipe-chain.
 
