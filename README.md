@@ -40,6 +40,21 @@ read, parse, fork, setup redirects/pipes, fork, exec, wait (if not ran in backgr
 [shell-core ~] $ ls -la | grep c | ... | sort
 ```
 
+#### Run commands in the background (&):
+```
+[shell-core ~] $ ls -ls &
+```
+
+#### Multiple commands in one line (&&):
+```
+[shell-core ~] $ ls && echo password123 | grep 123
+```
+
+#### Run command in background AND pipe result (second process must wait for input of other):
+```
+[shell-core ~] $ ls -la | grep Makefile
+```
+
 ## Compiling
 
 ### Build
@@ -55,4 +70,6 @@ read, parse, fork, setup redirects/pipes, fork, exec, wait (if not ran in backgr
 ## Limitations
 - Arguments, redirect symbols, and pipes must be seperated by whitespace.
 - Maximum number of tokens (as defined by **MAX_TOKENS**) is currently 25.
-- When processing a pipe: the shell will always wait for the first process to finish before spawning the next.
+- When processing a pipe: 
+    the shell will always wait for the first process to finish before spawning the next;
+    unless, the statement is ran in the background with the & symbol.
