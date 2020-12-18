@@ -16,7 +16,7 @@
 #include <stdlib.h>
 #include <fcntl.h>
 
-#define DEBUG 1
+#define DEBUG 0
 #define MAX_TOKENS 25
 
 typedef struct // holds information about the current command-line.
