@@ -290,7 +290,7 @@ void spawn(CmdLine* cmdline, int* fdd, int pipes, int executableIndex)
 
     if(DEBUG)
     {
-        printf("\nargs-to-child: \n\t");
+        printf("\nargs-to-[%s]: \n\t", cmdline->tokens[executableIndex]);
         for(j = 0; j < nArgsToChild; j++)
         {
             printf("[%s] \n\t", argsToChild[j]);
