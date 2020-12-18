@@ -54,6 +54,5 @@ read, parse, fork, setup redirects/pipes, fork, exec, wait (if not ran in backgr
 
 ## Limitations
 - Arguments, redirect symbols, and pipes must be seperated by whitespace.
-- Only supports background commands (**&**) when not piping the output.
 - Maximum number of tokens (as defined by **MAX_TOKENS**) is currently 25.
 - When processing a pipe: the shell will always wait for the first process to finish before spawning the next.
