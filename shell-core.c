@@ -28,7 +28,7 @@ typedef struct // holds information about the current command-line.
 } CmdLine;
 
 void free_strings(char* ptrArray[], int length);
-void spawn(CmdLine* cmdline, int* fdd, int pipes, int executableIndex);
+void spawn(CmdLine* cmdline, int* fdd, int pipes, int pipeMode,int executableIndex);
 void tokenize(CmdLine* cmdline);
 void execute(CmdLine* cmdline);
 
@@ -116,18 +116,21 @@ void execute(CmdLine* cmdline)
 
     for(i = 0; i < cmdline->ntokens; i++)
     {
+        int pipeMode = 1; // if output should be passed to next statement input.
+
         if(pipes != 0 && pipes == cmdline->npipes) // last executable:
         {
             executableIndex = lastPipeIndex + 1; // maybe can just = i ?
-            spawn(cmdline, &fdd, pipes, executableIndex);
+            spawn(cmdline, &fdd, pipes, pipeMode, executableIndex);
             
             i = cmdline->ntokens; // we're done; that was the last command to execute.
         }
-        else if(!strcmp(cmdline->tokens[i], "|")) // more executables:
+        else if(!strcmp(cmdline->tokens[i], "|") || !strcmp(cmdline->tokens[i], "&&")) // more executables:
         {
             lastPipeIndex = i;
 
-            spawn(cmdline, &fdd, pipes, executableIndex);
+            if(!strcmp(cmdline->tokens[i], "&&")) pipeMode = 0;
+            spawn(cmdline, &fdd, pipes, pipeMode, executableIndex);
             
             // allow first stmt in pipe-chain to execute:
             pipes++;
@@ -135,7 +138,7 @@ void execute(CmdLine* cmdline)
         }
         else if (cmdline->npipes == 0) // no pipes:
         {
-            spawn(cmdline, &fdd, pipes, executableIndex);
+            spawn(cmdline, &fdd, pipes, pipeMode, executableIndex);
             i = cmdline->ntokens; // we're done; that was the last command to execute.
         }
         
@@ -168,7 +171,7 @@ void tokenize(CmdLine* cmdline)
             cmdline->ntokens = 0; // do not process any tokens.
         }
 
-        if(!strcmp(cmdline->tokens[count], "|")) pipeCount++; // count pipes.
+        if(!strcmp(cmdline->tokens[count], "|") || !strcmp(cmdline->tokens[count], "&&")) pipeCount++; // count pipes.
     } // the last one is always NULL.
     
     cmdline->ntokens = count; // store number of tokens found.
@@ -190,9 +193,10 @@ void tokenize(CmdLine* cmdline)
  * @param cmdline command-line sent by user.
  * @param fdd end of the pipe to pass along to next statement in pipe.
  * @param pipes number of pipes that have been processed.
+ * @param pipeMode if statement should be piped to the next.
  * @param executableIndex index of executable in current statement.
 */
-void spawn(CmdLine* cmdline, int* fdd, int pipes, int executableIndex)
+void spawn(CmdLine* cmdline, int* fdd, int pipes, int pipeMode,int executableIndex)
 {
     int stdOutFd = STDOUT_FILENO; // the file descriptor to be used as stdout in child processes.
     
@@ -285,6 +289,7 @@ void spawn(CmdLine* cmdline, int* fdd, int pipes, int executableIndex)
         }
         else if(!strcmp(cmdline->tokens[stmtExecIndex], "|") 
             || !strcmp(cmdline->tokens[stmtExecIndex], "&")
+            || !strcmp(cmdline->tokens[stmtExecIndex], "&&")
             || !strcmp(cmdline->tokens[stmtExecIndex], " "))
         {
             j = cmdline->ntokens; // stop copying; everything else is irrelevant to child process.
@@ -331,7 +336,7 @@ void spawn(CmdLine* cmdline, int* fdd, int pipes, int executableIndex)
     }
     else if(pid == 0) // child process:
     {
-        if(cmdline->npipes > 0 && pipes != cmdline->npipes) // && outputfile != null
+        if(cmdline->npipes > 0 && pipes != cmdline->npipes && pipeMode)
         {
             stdOutFd = fd[1];
         }
