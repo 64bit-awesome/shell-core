@@ -196,7 +196,7 @@ void tokenize(CmdLine* cmdline)
  * @param pipeMode if statement should be piped to the next.
  * @param executableIndex index of executable in current statement.
 */
-void spawn(CmdLine* cmdline, int* fdd, int pipes, int pipeMode,int executableIndex)
+void spawn(CmdLine* cmdline, int* fdd, int pipes, int pipeMode, int executableIndex)
 {
     int stdOutFd = STDOUT_FILENO; // the file descriptor to be used as stdout in child processes.
     
@@ -315,7 +315,7 @@ void spawn(CmdLine* cmdline, int* fdd, int pipes, int pipeMode,int executableInd
     int backgroundProcess = 0; // if the current statement should be run in background.
 
     // detect request to run in background (&):
-    for(k = executableIndex; k < cmdline->ntokens; k++)
+    for(k = 0; k < cmdline->ntokens; k++)
     {
         if(!strcmp(cmdline->tokens[k], "&"))
         {
