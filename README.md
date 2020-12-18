@@ -53,11 +53,12 @@ read, parse, fork, setup redirects/pipes, fork, exec, wait (if not ran in backgr
 #### Run command in background AND pipe result:
 ```
 [shell-core ~] $ ls -la & | grep Makefile
+[shell-core ~] $ ls -la | grep Makefile &
 ```
 
 ```
-Bash does not support doing this: current implementation of this may be unstable. 
-The shell won't wait for any other commands: prompt will be displayed if any statements are in background.
+Both commands above are equivalent to the shell.
+Warning: any & symbols will make all statements run in background.
 ```
 
 ## Compiling
