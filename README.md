@@ -11,7 +11,7 @@ read, parse, fork, setup redirects/pipes, fork, exec, wait (if not ran in backgr
 ```
 [64bit-awesome@arch-linux ~] $ sudo sc
 [sudo] password for 64bit-awesome:
-[shell-core ~] # 
+[shell-core ~] #
 ```
 
 #### Keeps track of current directory:
@@ -19,33 +19,15 @@ read, parse, fork, setup redirects/pipes, fork, exec, wait (if not ran in backgr
 [64bit-awesome@arch-linux ~] $ sc
 [shell-core ~] $ mkdir awesome
 [shell-core ~] $ cd awesome
-[shell-core awesome] $ 
+[shell-core awesome] $
 ```
 
-#### Redirection of STDIN and/or STDOUT
-```
-[shell-core ~] $ cat < input.txt > input.txt.copy
-```
-
-#### STDOUT redirection append mode:
-```
-[shell-core ~] $ cat < more-input.txt >> input.txt.copy
-```
-
-#### Pipelining: 
-```
-[shell-core ~] $ ls -la | grep Makefile
-```
-```
-[shell-core ~] $ ls -la | grep c | ... | sort
-```
-
-#### Run commands in the background (&):
+#### Run commands in the background ( & ):
 ```
 [shell-core ~] $ ls -ls &
 ```
 
-#### Multiple commands in one line (&&):
+#### Multiple commands in one line ( && ):
 ```
 [shell-core ~] $ ls && echo password123 | grep 123
 ```
@@ -59,6 +41,24 @@ read, parse, fork, setup redirects/pipes, fork, exec, wait (if not ran in backgr
 ```
 Warning: any & symbols will make all statements run in background.
 Both commands above are equivalent to the shell.
+```
+
+#### Pipelining ( | ): 
+```
+[shell-core ~] $ ls -la | grep Makefile
+```
+```
+[shell-core ~] $ ls -la | grep c | ... | sort
+```
+
+#### Redirection of STDIN and/or STDOUT ( < / > )
+```
+[shell-core ~] $ cat < input.txt > input.txt.copy
+```
+
+#### STDOUT redirection append mode ( >> ):
+```
+[shell-core ~] $ cat < more-input.txt >> input.txt.copy
 ```
 
 ## Compiling
