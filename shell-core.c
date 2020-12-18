@@ -325,7 +325,8 @@ void spawn(CmdLine* cmdline, int* fdd, int pipes, int executableIndex)
         fprintf(stderr, "internal-error: \n\t");
         fprintf(stderr, "fork: failed. \n");
 
-        free(cmdline); // TODO: fix memory leak in argsToChild.
+        free_strings(argsToChild, nArgsToChild);
+        free(cmdline);
         exit(-1);
     }
     else if(pid == 0) // child process:
