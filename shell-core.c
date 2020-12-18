@@ -185,6 +185,13 @@ void tokenize(CmdLine* cmdline)
     }
 }
 
+/**
+ * Spawns a child process with the current statement from the command line.
+ * @param cmdline cmdline sent by user.
+ * @param fdd end of the pipe to pass along to next statement in pipe.
+ * @param pipes number of pipes that have been processed.
+ * @param executableIndex index of executable in current statement.
+*/
 void spawn(CmdLine* cmdline, int* fdd, int pipes, int executableIndex)
 {
     int stdOutFd = STDOUT_FILENO; // the file descriptor to be used as stdout in child processes.
