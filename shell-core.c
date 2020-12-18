@@ -358,6 +358,8 @@ void spawn(CmdLine* cmdline, int* fdd, int pipes, int pipeMode, int executableIn
     {
         if(backgroundProcess)
         {
+            printf("[%s]\t%d\n", cmdline->tokens[executableIndex], pid);
+            
             if(setpgid(0, 0) == -1)
             {
                 fprintf(stderr, "internal-error: \n\t");
