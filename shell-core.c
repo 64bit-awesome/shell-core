@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <fcntl.h>
 
+#define DEBUG 1
 #define MAX_TOKENS 25
 
 typedef struct // holds information about the current command-line.
@@ -171,6 +172,16 @@ void tokenize(CmdLine* cmdline)
     
     cmdline->ntokens = count; // store number of tokens found.
     cmdline->npipes = pipeCount; // store number of pipes found.
+
+    if(DEBUG)
+    {
+        printf("\ntokens-detected: \n\t");
+        for(count = 0; count < cmdline->ntokens; count++)
+        {
+            printf("[%s] \n\t", cmdline->tokens[count]);
+        }
+        printf("\n");
+    }
 }
 
 void spawn(CmdLine* cmdline, int* fdd, int pipes, int executableIndex)
@@ -272,6 +283,16 @@ void spawn(CmdLine* cmdline, int* fdd, int pipes, int executableIndex)
             argsToChild[j] = malloc(strlen(cmdline->tokens[stmtExecIndex]) + 1);
             strcpy(argsToChild[j], cmdline->tokens[stmtExecIndex]);
         }
+    }
+
+    if(DEBUG)
+    {
+        printf("\nargs-to-child: \n\t");
+        for(j = 0; j < nArgsToChild; j++)
+        {
+            printf("[%s] \n\t", argsToChild[j]);
+        }
+        printf("\n");
     }
 
     // attempt to fork a child process:
