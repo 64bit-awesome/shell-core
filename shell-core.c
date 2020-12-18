@@ -27,6 +27,7 @@ typedef struct // holds information about the current command-line.
     char* tokens[MAX_TOKENS]; // ->s to the tokens in cmdline.
 } CmdLine;
 
+void free_strings(char* ptrArray[], int length);
 void spawn(CmdLine* cmdline, int* fdd, int pipes, int executableIndex);
 void tokenize(CmdLine* cmdline);
 void execute(CmdLine* cmdline);
@@ -239,7 +240,8 @@ void spawn(CmdLine* cmdline, int* fdd, int pipes, int executableIndex)
                     cmdline->tokens[stmtExecIndex + 1],
                     cmdline->tokens[executableIndex]);
                
-                free(cmdline); // TODO: free args to child.
+                free_strings(argsToChild, nArgsToChild);
+                free(cmdline);
                 exit(-1);
             }
             
@@ -267,7 +269,8 @@ void spawn(CmdLine* cmdline, int* fdd, int pipes, int executableIndex)
                     cmdline->tokens[stmtExecIndex + 1],
                     cmdline->tokens[executableIndex]);
                
-                free(cmdline); // TODO: free args to child.
+                free_strings(argsToChild, nArgsToChild);
+                free(cmdline);
                 exit(-1);
             }
 
@@ -320,7 +323,8 @@ void spawn(CmdLine* cmdline, int* fdd, int pipes, int executableIndex)
         // if here, something has gone horribly wrong:
         fprintf(stderr, "invalid-executable:\n\tunable to execute %s.\n\tmake sure it is in your path.\n", cmdline->tokens[executableIndex]);
             
-        free(cmdline); // TODO: fix memory leak in argsToChild.
+        free_strings(argsToChild, nArgsToChild);
+        free(cmdline);
         exit(-1);
     }
     else // parent:
@@ -328,5 +332,18 @@ void spawn(CmdLine* cmdline, int* fdd, int pipes, int executableIndex)
         wait(NULL);		
         close(fd[1]);
         *fdd = fd[0]; // save output from previous stmt in pipe-chain.
+
+        free_strings(argsToChild, nArgsToChild); // free strings passed to child process; we don't need them anymore.
     }
+}
+
+/**
+ * Releases strings that were allocated with malloc.
+ * @param ptrArray an array of ->s.
+ * @param length length of the array.
+*/
+void free_strings(char* ptrArray[], int length)
+{
+    int i; // the current ptr index.
+    for(i = 0; i < length; i++)  free(ptrArray[i]);
 }
