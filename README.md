@@ -57,8 +57,8 @@ read, parse, fork, setup redirects/pipes, fork, exec, wait (if not ran in backgr
 ```
 
 ```
-Both commands above are equivalent to the shell.
 Warning: any & symbols will make all statements run in background.
+Both commands above are equivalent to the shell.
 ```
 
 ## Compiling
