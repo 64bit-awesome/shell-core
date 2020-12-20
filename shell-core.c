@@ -8,8 +8,10 @@
 #include <pwd.h>
 #include <stdio.h>
 #include <unistd.h>
+
 #include<sys/wait.h> 
 
+#include <errno.h>
 #include <limits.h>
 
 #include <string.h>
@@ -36,6 +38,7 @@ typedef struct // holds information about the current command-line.
 void free_zproc(CmdLine* cmdline);
 void free_strings(char* ptrArray[], int length);
 void spawn(CmdLine* cmdline, int* fdd, int pipes, int pipeMode,int executableIndex);
+void ch_directory(CmdLine* cmdline);
 void tokenize(CmdLine* cmdline);
 void execute(CmdLine* cmdline);
 
@@ -117,6 +120,13 @@ void execute(CmdLine* cmdline)
         free_zproc(cmdline);
         free(cmdline);
         exit(0); // clean exit.
+    }
+
+    // check if user wants to change working directory:
+    if(!strcmp(cmdline->tokens[0], "cd")) 
+    {
+        ch_directory(cmdline);
+        return;
     }
     
     int i; // index of the current token being processed.
@@ -390,6 +400,31 @@ void spawn(CmdLine* cmdline, int* fdd, int pipes, int pipeMode, int executableIn
         *fdd = fd[0]; // save output from previous stmt in pipe-chain.
 
         free_strings(argsToChild, nArgsToChild); // free strings passed to child process; we don't need them anymore.
+    }
+}
+
+/**
+ * Changes the current working directory.
+ * @param cmdline command-line sent by user.
+*/
+void ch_directory(CmdLine* cmdline)
+{
+    // sanity check on input:
+    if(cmdline->ntokens < 2) // too few arguments:
+    {
+        fprintf(stderr, "cd: missing path. \n");
+        return;
+    }
+    else if(cmdline->ntokens > 2) // too many arguments:
+    {
+        fprintf(stderr, "cd: %d arguments passed; expecting 2. \n", cmdline->ntokens - 1);
+        return;
+    }
+
+    // attempt to change directories:
+    if(chdir(cmdline->tokens[1]) == -1)
+    {   // if here: could not change directories:
+        fprintf(stderr, "cd: %s. \n",  strerror(errno));
     }
 }
 
