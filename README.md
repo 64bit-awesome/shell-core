@@ -24,7 +24,7 @@ read, parse, fork, setup redirects/pipes, fork, exec, wait (if not ran in backgr
 
 #### Run commands in the background ( & ):
 ```
-[shell-core ~] $ ls -ls &
+[shell-core ~] $ ls -la &
 ```
 
 #### Multiple commands in one line ( && ):
