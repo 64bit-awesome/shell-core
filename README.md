@@ -1,6 +1,6 @@
 # shell-core (sc)
 
-An extendible Linux / Unix shell with pipe and redirection support.
+A simple, yet extendible Linux / Unix shell with pipe and redirection support.
 
 This program implements the **core** functionalities of a shell: \
 read, parse, fork, setup redirects/pipes, fork, exec, wait (if not ran in background), and repeat.
@@ -73,9 +73,12 @@ Both commands above are equivalent to the shell.
 [64bit-awesome@arch-linux ~] $ make clean
 ```
 
-## Limitations
-- Arguments, redirect symbols, and pipes must be seperated by whitespace.
+## Implementation Limitations
+- Arguments, redirect symbols, and pipes must be seperated by **whitespace**.
 - Maximum number of tokens (as defined by **MAX_TOKENS**) is currently 25.
 - When processing multiple commands in one line: 
     - the shell will always wait for the first process to finish before spawning the next; 
     - unless the statement is ran in the background with the & symbol.
+
+## To-Do List 
+- Report the exit status of child processes.
