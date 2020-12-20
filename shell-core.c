@@ -25,8 +25,15 @@ typedef struct // holds information about the current command-line.
     int ntokens; // the number of tokens found in cmdline.
     char line[BUFSIZ]; // the full command-line.
     char* tokens[MAX_TOKENS]; // ->s to the tokens in cmdline.
+
+    /**
+     * zombies[0] will contain the count of processes ran in background.
+     * zombies[1+] contains the pid of the process; up a max of MAX_TOKENS.
+    */
+    int zombies[MAX_TOKENS + 1]; // pids of processes ran in background.
 } CmdLine;
 
+void free_zproc(CmdLine* cmdline);
 void free_strings(char* ptrArray[], int length);
 void spawn(CmdLine* cmdline, int* fdd, int pipes, int pipeMode,int executableIndex);
 void tokenize(CmdLine* cmdline);
@@ -46,6 +53,7 @@ int main (int argc, char* argv [])
             fprintf(stderr, "internal-error: ");
             fprintf(stderr, "\n\tgetcwd: failed.\n");
             
+            free_zproc(cmdline);
             free(cmdline);
             exit(-1);
         }
@@ -56,6 +64,7 @@ int main (int argc, char* argv [])
             fprintf(stderr, "internal-error: ");
             fprintf(stderr, "\n\tstrrchr: failed to find current folder in %s.\n", cwd);
             
+            free_zproc(cmdline);
             free(cmdline);
             exit(-1);
         }
@@ -79,6 +88,7 @@ int main (int argc, char* argv [])
             fprintf(stderr, "internal-error: ");
             fprintf(stderr, "\n\tfgets: failed.\n");
             
+            free_zproc(cmdline);
             free(cmdline);
             exit(-1);
         }
@@ -86,6 +96,7 @@ int main (int argc, char* argv [])
         execute(cmdline);
     }
     
+    free_zproc(cmdline);
     free(cmdline);
     return 0; 
 }
@@ -102,7 +113,8 @@ void execute(CmdLine* cmdline)
     
     // check if user wants to leave the shell:
     if(!strcmp(cmdline->tokens[0], "quit") || !strcmp(cmdline->tokens[0], "exit")) 
-    {
+    {        
+        free_zproc(cmdline);
         free(cmdline);
         exit(0); // clean exit.
     }
@@ -209,6 +221,7 @@ void spawn(CmdLine* cmdline, int* fdd, int pipes, int pipeMode, int executableIn
         fprintf(stderr, "internal-error: \n\t");
         fprintf(stderr, "pipe-creation: failed. \n");
 
+        free_zproc(cmdline);
         free(cmdline);
         exit(-1);
     }
@@ -252,6 +265,7 @@ void spawn(CmdLine* cmdline, int* fdd, int pipes, int pipeMode, int executableIn
                     cmdline->tokens[executableIndex]);
                
                 free_strings(argsToChild, nArgsToChild);
+                free_zproc(cmdline);
                 free(cmdline);
                 exit(-1);
             }
@@ -281,6 +295,7 @@ void spawn(CmdLine* cmdline, int* fdd, int pipes, int pipeMode, int executableIn
                     cmdline->tokens[executableIndex]);
                
                 free_strings(argsToChild, nArgsToChild);
+                free_zproc(cmdline);
                 free(cmdline);
                 exit(-1);
             }
@@ -331,6 +346,7 @@ void spawn(CmdLine* cmdline, int* fdd, int pipes, int pipeMode, int executableIn
         fprintf(stderr, "fork: failed. \n");
 
         free_strings(argsToChild, nArgsToChild);
+        free_zproc(cmdline);
         free(cmdline);
         exit(-1);
     }
@@ -351,16 +367,18 @@ void spawn(CmdLine* cmdline, int* fdd, int pipes, int pipeMode, int executableIn
         fprintf(stderr, "invalid-executable:\n\tunable to execute %s.\n\tmake sure it is in your path.\n", cmdline->tokens[executableIndex]);
             
         free_strings(argsToChild, nArgsToChild);
+        free_zproc(cmdline);
         free(cmdline);
         exit(-1);
     }
     else // parent:
     {
-        int status; // status of pidwait.
+        int status; // status of child process.
 
         if(backgroundProcess)
         {
-            printf("[%s]\t%d\n", cmdline->tokens[executableIndex], pid);
+            cmdline->zombies[++cmdline->zombies[0]] = pid; // keep track of backgroudn processes.
+            printf("[%s]\t%d\n", cmdline->tokens[executableIndex], pid); // let the user know.
         }
         else // wait for process to finish before proceding:
         {
@@ -384,4 +402,18 @@ void free_strings(char* ptrArray[], int length)
 {
     int i; // the current ptr index.
     for(i = 0; i < length; i++)  free(ptrArray[i]);
+}
+
+/**
+ * Frees "background" process information from kernel.
+ * @param cmdline command-line sent by user.
+*/
+void free_zproc(CmdLine* cmdline)
+{
+    int status; // status of zombie process.
+    while(cmdline->zombies[0] > 0) // release information about zombie processes.
+    {
+        waitpid(cmdline->zombies[cmdline->zombies[0]], &status, 0);
+        cmdline->zombies[0]--;
+    }
 }
