@@ -356,23 +356,15 @@ void spawn(CmdLine* cmdline, int* fdd, int pipes, int pipeMode, int executableIn
     }
     else // parent:
     {
+        int status; // status of pidwait.
+
         if(backgroundProcess)
         {
             printf("[%s]\t%d\n", cmdline->tokens[executableIndex], pid);
-            
-            if(setpgid(0, 0) == -1)
-            {
-                fprintf(stderr, "internal-error: \n\t");
-                fprintf(stderr, "setpgid: failed to make child [%s] a background process. \n", cmdline->tokens[executableIndex]);
-
-                free_strings(argsToChild, nArgsToChild);
-                free(cmdline);
-                exit(-1);
-            }
         }
         else // wait for process to finish before proceding:
         {
-            wait(NULL);
+            waitpid(pid, &status, 0);
         }
         
         	
