@@ -9,15 +9,14 @@ read, parse, fork, setup redirects/pipes, fork, exec, wait (if not ran in backgr
 
 #### Detects super cow powers:
 ```
-[64bit-awesome@arch-linux ~] $ sudo sc
+[64bit-awesome@arch-linux ~] $ sudo ./sc
 [sudo] password for 64bit-awesome:
 [shell-core ~] #
 ```
 
-#### Keeps track of current directory:
+#### Change Nd keep track of current directory:
 ```
-[64bit-awesome@arch-linux ~] $ sc
-[shell-core ~] $ mkdir awesome
+[64bit-awesome@arch-linux ~] $ mkdir awesome && ./sc
 [shell-core ~] $ cd awesome
 [shell-core awesome] $
 ```
@@ -32,7 +31,7 @@ read, parse, fork, setup redirects/pipes, fork, exec, wait (if not ran in backgr
 [shell-core ~] $ ls && echo password123 | grep 123
 ```
 
-#### Run command in background AND pipe result:
+#### Run command in background Nd pipe result:
 ```
 [shell-core ~] $ ls -la & | grep Makefile
 [shell-core ~] $ ls -la | grep Makefile &
