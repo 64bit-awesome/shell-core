@@ -3,7 +3,7 @@
 A simple, yet extendible Linux / Unix shell with pipe and redirection support.
 
 This program implements the **core** functionalities of a shell: \
-read, parse, fork, setup redirects/pipes, fork, exec, wait (if not ran in background), and repeat.
+read, parse, setup redirects/pipes, fork, exec, wait (if not ran in background), and repeat.
 
 ## Features
 
